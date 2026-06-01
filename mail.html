@@ -555,6 +555,7 @@
             border-bottom: 1px solid var(--glass-border);
             cursor: pointer;
             transition: background 0.2s;
+            border-radius: 0;
         }
 
         .mail-item:hover {
@@ -565,6 +566,22 @@
             background: var(--primary-light);
             border-left: 3px solid var(--primary-color);
             border-radius: 10px;
+            margin: 4px 0;
+        }
+
+        .mail-item:first-child {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .mail-item:last-child {
+            border-bottom: none;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .mail-item:only-child {
+            border-radius: 12px;
         }
 
         .mail-item-header {
@@ -1449,7 +1466,7 @@
             return [];
         }
 
-        async function getMailDetail(mailId) {
+        async function getMailDetail(mailId, messageId = '') {
             if (!selectedEmail) {
                 console.error('selectedEmail is null or undefined');
                 return null;
@@ -1460,10 +1477,16 @@
                 return null;
             }
             
-            const result = await apiCall('getMail', {
+            const requestData = {
                 address: selectedEmail,
                 mailId: mailId
-            });
+            };
+            
+            if (messageId) {
+                requestData.message_id = messageId;
+            }
+            
+            const result = await apiCall('getMail', requestData);
 
             if (result.returnData.code === 200) {
                 return result.returnData.content;
@@ -1615,7 +1638,7 @@
             } else {
                 mailListEl.innerHTML = mails.map(mail => `
                     <div class="mail-item ${mail.id === selectedMailId ? 'active' : ''}" 
-                         onclick="selectMail(${mail.id})">
+                         onclick="selectMail(${mail.id}, '${escapeHtml(mail.message_id || '')}')">
                         <div class="mail-item-header">
                             <span class="mail-from">${escapeHtml(mail.source || '未知')}</span>
                             <span class="mail-date">${formatDate(mail.created_at)}</span>
@@ -1627,7 +1650,7 @@
             }
         }
 
-        async function selectMail(mailId) {
+        async function selectMail(mailId, messageId = '') {
             selectedMailId = mailId;
             renderMailList();
             
@@ -1643,7 +1666,7 @@
                 </div>
             `;
 
-            const mail = await getMailDetail(mailId);
+            const mail = await getMailDetail(mailId, messageId);
             if (mail) {
                 renderMailDetail(mail);
             } else {
