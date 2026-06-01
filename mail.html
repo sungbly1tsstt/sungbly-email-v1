@@ -515,7 +515,7 @@
         }
 
         .mail-list-panel {
-            width: 400px;
+            width: 350px;
             flex-shrink: 0;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -564,6 +564,7 @@
         .mail-item.active {
             background: var(--primary-light);
             border-left: 3px solid var(--primary-color);
+            border-radius: 10px;
         }
 
         .mail-item-header {
@@ -1135,7 +1136,7 @@
 
         @media (max-width: 1200px) {
             .mail-list-panel {
-                width: 320px;
+                width: 280px;
             }
         }
 
@@ -1429,7 +1430,10 @@
         }
 
         async function getMailList() {
-            if (!selectedEmail) return [];
+            if (!selectedEmail) {
+                console.error('selectedEmail is null or undefined, cannot fetch mail list');
+                return [];
+            }
             
             const result = await apiCall('listMails', {
                 address: selectedEmail,
@@ -1439,12 +1443,22 @@
 
             if (result.returnData.code === 200 && result.returnData.content.results) {
                 return result.returnData.content.results;
+            } else if (result.returnData.code !== 200) {
+                console.error('API Error:', result.returnData);
             }
             return [];
         }
 
         async function getMailDetail(mailId) {
-            if (!selectedEmail) return null;
+            if (!selectedEmail) {
+                console.error('selectedEmail is null or undefined');
+                return null;
+            }
+            
+            if (!mailId) {
+                console.error('mailId is null or undefined');
+                return null;
+            }
             
             const result = await apiCall('getMail', {
                 address: selectedEmail,
@@ -1453,6 +1467,8 @@
 
             if (result.returnData.code === 200) {
                 return result.returnData.content;
+            } else {
+                console.error('API Error:', result.returnData);
             }
             return null;
         }
