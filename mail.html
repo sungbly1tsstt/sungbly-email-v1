@@ -1571,7 +1571,7 @@
                     </div>
                 </div>
             `;
-            loadMailList();
+            renderMailList();
         }
 
         function getFolderName() {
@@ -1583,7 +1583,7 @@
             }
         }
 
-        async function loadMailList() {
+        async function renderMailList() {
             const mailListEl = document.getElementById('mailList');
             if (!mailListEl) return;
 
@@ -1717,18 +1717,23 @@
         }
 
         function parseMailBody(raw) {
-            if (!raw) return '';
+            if (!raw) return '<p>邮件内容为空</p>';
             
             let body = '';
-            const lines = raw.split('\n');
+            let contentType = 'text/plain';
+            let contentTransferEncoding = '';
             let inBody = false;
-            let contentType = '';
+            const lines = raw.split('\n');
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 
                 if (line.toLowerCase().startsWith('content-type:')) {
                     contentType = line.toLowerCase();
+                }
+                
+                if (line.toLowerCase().startsWith('content-transfer-encoding:')) {
+                    contentTransferEncoding = line.toLowerCase().replace('content-transfer-encoding:', '').trim();
                 }
                 
                 if (!inBody && line.trim() === '') {
@@ -1741,11 +1746,53 @@
                 }
             }
             
-            if (contentType.includes('text/html')) {
-                return body;
+            body = body.trim();
+            
+            if (contentTransferEncoding.includes('base64')) {
+                try {
+                    body = atob(body.replace(/\s/g, ''));
+                } catch (e) {
+                    console.error('Base64 decode error:', e);
+                }
+            } else if (contentTransferEncoding.includes('quoted-printable')) {
+                body = decodeQuotedPrintable(body);
             }
             
-            return escapeHtml(body).replace(/\n/g, '<br>');
+            if (contentType.includes('text/html')) {
+                return sanitizeHtml(body);
+            }
+            
+            return '<p>' + escapeHtml(body).replace(/\n/g, '</p><p>') + '</p>';
+        }
+
+        function decodeQuotedPrintable(str) {
+            return str.replace(/=([0-9A-Fa-f]{2})/g, (match, hex) => {
+                return String.fromCharCode(parseInt(hex, 16));
+            }).replace(/=\r?\n/g, '');
+        }
+
+        function sanitizeHtml(html) {
+            const allowedTags = ['b', 'i', 'u', 'strong', 'em', 'p', 'br', 'div', 'span', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th'];
+            const allowedAttributes = ['href', 'target'];
+            
+            return html.replace(/<(\/?)(\w+)([^>]*)>/gi, (match, closing, tag, attrs) => {
+                if (allowedTags.includes(tag.toLowerCase())) {
+                    let cleanAttrs = '';
+                    if (attrs) {
+                        const attrMatches = attrs.match(/(\w+)\s*=\s*["']([^"']*)["']/gi);
+                        if (attrMatches) {
+                            attrMatches.forEach(attrMatch => {
+                                const attrMatchParts = attrMatch.match(/(\w+)\s*=\s*["']([^"']*)["']/i);
+                                if (attrMatchParts && allowedAttributes.includes(attrMatchParts[1].toLowerCase())) {
+                                    cleanAttrs += ' ' + attrMatch;
+                                }
+                            });
+                        }
+                    }
+                    return `<${closing}${tag}${cleanAttrs}>`;
+                }
+                return '';
+            });
         }
 
         // Domain Select Functions
