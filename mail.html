@@ -1035,7 +1035,7 @@
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: var(--text-secondary);
         }
 
@@ -1048,7 +1048,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            margin-bottom: 16px;
+            margin: 0 auto 16px;
         }
 
         .empty-state-icon svg {
@@ -1061,6 +1061,14 @@
 
         .empty-state-text {
             font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-text-secondary {
+            font-size: 13px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-top: 4px;
         }
 
         .register-success-box {
@@ -1071,6 +1079,7 @@
             border-radius: 16px;
             max-width: 500px;
             width: 100%;
+            margin: 0 auto;
         }
 
         .register-success-icon {
@@ -1324,7 +1333,6 @@
 
         function logout() {
             document.cookie = 'sungbly_email_cert=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            document.cookie = 'sungbly_email_cert_full=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             document.cookie = 'sungbly_email_uid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             document.cookie = 'sungbly_email_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             window.location.href = 'https://account.838483.xyz/account/login.html?appID=email';
@@ -1516,10 +1524,10 @@
                     <div class="register-content">
                         <div class="register-success-box">
                             <div class="register-success-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </div>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
                             <h3 class="register-success-title">邮箱注册成功！</h3>
                             <div class="register-success-email">${emailAddress}</div>
                             <p class="register-success-desc">恭喜！您已成功注册邮箱地址。现在可以开始使用邮件系统了。</p>
@@ -1584,12 +1592,8 @@
             if (mails.length === 0) {
                 mailListEl.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                                </svg>
-                            </div>
-                        <div class="empty-state-text">暂无邮件</div>
+                        <div class="empty-state-text">收件箱为空</div>
+                        <div class="empty-state-text-secondary">暂无新邮件</div>
                     </div>
                 `;
             } else {
