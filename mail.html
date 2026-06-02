@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUNGBLY 邮件系统</title>
+    <script type="module">
+        import { parse_message, __tla } from '/assets/mail_parser_wasm.js';
+        window.mailParser = { parse_message, init: __tla };
+    </script>
     <style>
         :root {
             --bg-gradient-start: #e3f2fd;
@@ -133,7 +137,6 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
-            overflow: hidden;
         }
 
         .navbar {
@@ -141,7 +144,6 @@
             top: 20px;
             left: 20px;
             right: 20px;
-            height: 56px;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -152,13 +154,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 12px 24px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .navbar-left {
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-shrink: 0;
         }
 
         .navbar-title {
@@ -177,6 +182,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .color-switcher {
@@ -227,6 +233,7 @@
             cursor: pointer;
             transition: all 0.2s;
             backdrop-filter: blur(10px);
+            white-space: nowrap;
         }
 
         .action-btn:hover {
@@ -263,6 +270,7 @@
             transition: all 0.2s;
             backdrop-filter: blur(10px);
             min-width: 140px;
+            white-space: nowrap;
         }
 
         .account-dropdown-btn:hover {
@@ -359,13 +367,11 @@
         }
 
         .main-container {
-            position: fixed;
-            top: 96px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
+            position: relative;
+            margin: 100px 20px 20px 20px;
             display: flex;
             gap: 20px;
+            min-height: calc(100vh - 120px);
         }
 
         .sidebar {
@@ -384,6 +390,9 @@
             overflow-y: auto;
             overflow-x: hidden;
             transition: width 0.3s ease;
+            max-height: calc(100vh - 140px);
+            position: sticky;
+            top: 100px;
         }
 
         .sidebar.collapsed {
@@ -525,7 +534,8 @@
             box-shadow: 0 8px 24px var(--glass-shadow);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
         }
 
         .panel-header {
@@ -545,6 +555,74 @@
             color: var(--text-secondary);
         }
 
+        .panel-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .panel-header-top .panel-title {
+            margin-bottom: 0;
+        }
+
+        .collapse-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .collapse-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+
+        .collapse-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .collapse-btn:hover svg {
+            stroke: var(--primary-color);
+        }
+
+        .mail-list-panel.collapsed {
+            width: 60px;
+            min-width: 60px;
+        }
+
+        .mail-list-panel.collapsed .panel-header-top .panel-title,
+        .mail-list-panel.collapsed .panel-subtitle,
+        .mail-list-panel.collapsed .mail-list {
+            display: none;
+        }
+
+        .mail-list-panel.collapsed .collapse-btn svg {
+            transform: rotate(180deg);
+        }
+
+        .mail-list-panel.collapsed .panel-header {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mail-list-panel.collapsed .panel-header-top {
+            margin-bottom: 0;
+            justify-content: center;
+        }
+
         .mail-list {
             flex: 1;
             overflow-y: auto;
@@ -554,34 +632,36 @@
             padding: 16px 20px;
             border-bottom: 1px solid var(--glass-border);
             cursor: pointer;
-            transition: background 0.2s;
-            border-radius: 0;
+            transition: all 0.2s;
+            border-radius: 10px;
+            margin: 4px 8px;
         }
 
         .mail-item:hover {
             background: var(--primary-light);
+            border-radius: 10px;
         }
 
         .mail-item.active {
             background: var(--primary-light);
             border-left: 3px solid var(--primary-color);
             border-radius: 10px;
-            margin: 4px 0;
+            margin: 4px 8px;
         }
 
         .mail-item:first-child {
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
 
         .mail-item:last-child {
             border-bottom: none;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
 
         .mail-item:only-child {
-            border-radius: 12px;
+            border-radius: 10px;
         }
 
         .mail-item-header {
@@ -630,6 +710,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            max-height: calc(100vh - 140px);
         }
 
         .mail-detail-empty {
@@ -665,11 +746,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            overflow-y: auto;
         }
 
         .mail-detail-header {
             padding: 24px;
             border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
         }
 
         .mail-detail-subject {
@@ -736,6 +819,8 @@
             font-size: 14px;
             line-height: 1.8;
             color: var(--text-primary);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .mail-detail-actions {
@@ -743,6 +828,7 @@
             border-top: 1px solid var(--glass-border);
             display: flex;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .btn {
@@ -795,6 +881,7 @@
             align-items: center;
             justify-content: center;
             padding: 40px;
+            overflow-y: auto;
         }
 
         .register-icon {
@@ -1109,7 +1196,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            margin-bottom: 16px;
+            margin: 0 auto 16px;
         }
 
         .register-success-icon svg {
@@ -1158,6 +1245,18 @@
         }
 
         @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+                margin-top: 120px;
+                min-height: calc(100vh - 140px);
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: none;
+                position: static;
+            }
+
             .content-area {
                 flex-direction: column;
             }
@@ -1184,10 +1283,245 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 10px 16px;
+            }
+
+            .navbar-title {
+                font-size: 16px;
+            }
+
+            .navbar-left {
+                gap: 8px;
+            }
+
+            .navbar-user {
+                display: none;
+            }
+
+            .navbar-actions {
+                gap: 8px;
+            }
+
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .action-btn span {
+                display: none;
+            }
+
+            .account-dropdown-btn {
+                min-width: auto;
+                padding: 6px 10px;
+            }
+
+            .account-dropdown-btn span {
+                display: none;
+            }
+
+            .color-switcher {
+                gap: 4px;
+            }
+
+            .color-btn {
+                width: 24px;
+                height: 24px;
+            }
+
+            .main-container {
+                margin: 130px 12px 12px 12px;
+                gap: 12px;
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+
+            .mail-list-panel {
+                width: 100%;
+                max-height: 300px;
+            }
+
+            .mail-list-panel.collapsed {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .mail-detail-panel {
+                width: 100%;
+                min-height: 50vh;
+            }
+
+            .register-success-box {
+                padding: 24px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .raw-mail-dialog {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .raw-mail-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .raw-mail-dialog-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .raw-mail-dialog-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+
+        .close-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-secondary);
+        }
+
+        .close-btn:hover svg {
+            fill: var(--primary-color);
+        }
+
+        .raw-mail-dialog-content {
+            flex: 1;
+            padding: 20px 24px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .raw-mail-content {
+            margin: 0;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .theme-dark-blue .raw-mail-content,
+        .theme-dark-purple .raw-mail-content,
+        .theme-dark-green .raw-mail-content {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .raw-mail-dialog {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .raw-mail-dialog-header {
+                padding: 16px 20px;
+            }
+
+            .raw-mail-dialog-content {
+                padding: 16px 20px;
+            }
+
+            .raw-mail-content {
+                font-size: 11px;
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body class="theme-blue">
-    <!-- Navigation Bar -->
+    <div class="modal-overlay" id="rawMailModal" onclick="closeRawMailModal(event)">
+        <div class="raw-mail-dialog">
+            <div class="raw-mail-dialog-header">
+                <h3>邮件原文</h3>
+                <button class="close-btn" onclick="closeRawMailModal()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="raw-mail-dialog-content">
+                <pre class="raw-mail-content" id="rawMailContent"></pre>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="navbar-left">
             <h1 class="navbar-title">SUNGBLY 邮件系统</h1>
@@ -1231,7 +1565,6 @@
     </nav>
 
     <div class="main-container">
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <span class="sidebar-header-title">文件夹</span>
@@ -1261,13 +1594,10 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
         <div class="content-area" id="contentArea">
-            <!-- This will be dynamically populated -->
         </div>
     </div>
 
-    <!-- Notification -->
     <div class="notification" id="notification">
         <span id="notificationMessage"></span>
     </div>
@@ -1287,7 +1617,6 @@
         const API_BASE = 'https://mail.838483.xyz/account/mail';
         const domains = ['838483.dpdns.org', 'sungbly.dpdns.org', '838483.xyz'];
 
-        // Cookie Functions
         function setCookie(name, value, days = 365) {
             const expires = new Date();
             expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -1305,7 +1634,6 @@
             return null;
         }
 
-        // Theme Functions
         function setTheme(theme) {
             document.body.className = `theme-${theme}`;
             currentTheme = theme;
@@ -1360,7 +1688,6 @@
             renderRegisterPage();
         }
 
-        // Notification Function
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             const messageEl = document.getElementById('notificationMessage');
@@ -1374,7 +1701,6 @@
             }, 3000);
         }
 
-        // Sidebar Functions
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('collapsed');
@@ -1394,7 +1720,6 @@
             renderMailList();
         }
 
-        // API Functions
         async function apiCall(type, data = {}) {
             const requestData = {
                 type,
@@ -1466,7 +1791,7 @@
             return [];
         }
 
-        async function getMailDetail(mailId, messageId = '') {
+        async function getMailDetail(mailId) {
             if (!selectedEmail) {
                 console.error('selectedEmail is null or undefined');
                 return null;
@@ -1477,16 +1802,10 @@
                 return null;
             }
             
-            const requestData = {
+            const result = await apiCall('getMail', {
                 address: selectedEmail,
                 mailId: mailId
-            };
-            
-            if (messageId) {
-                requestData.message_id = messageId;
-            }
-            
-            const result = await apiCall('getMail', requestData);
+            });
 
             if (result.returnData.code === 200) {
                 return result.returnData.content;
@@ -1496,7 +1815,6 @@
             return null;
         }
 
-        // Render Functions
         function renderRegisterPage() {
             const contentArea = document.getElementById('contentArea');
             contentArea.innerHTML = `
@@ -1587,9 +1905,16 @@
         function renderMailPage() {
             const contentArea = document.getElementById('contentArea');
             contentArea.innerHTML = `
-                <div class="mail-list-panel">
+                <div class="mail-list-panel" id="mailListPanel">
                     <div class="panel-header">
-                        <h2 class="panel-title">${getFolderName()}</h2>
+                        <div class="panel-header-top">
+                            <h2 class="panel-title">${getFolderName()}</h2>
+                            <button class="collapse-btn" onclick="toggleMailList()" title="折叠/展开">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+                        </div>
                         <p class="panel-subtitle">${selectedEmail || ''}</p>
                     </div>
                     <div class="mail-list" id="mailList">
@@ -1611,6 +1936,13 @@
                 </div>
             `;
             renderMailList();
+        }
+
+        function toggleMailList() {
+            const mailListPanel = document.getElementById('mailListPanel');
+            if (!mailListPanel) return;
+            
+            mailListPanel.classList.toggle('collapsed');
         }
 
         function getFolderName() {
@@ -1638,7 +1970,7 @@
             } else {
                 mailListEl.innerHTML = mails.map(mail => `
                     <div class="mail-item ${mail.id === selectedMailId ? 'active' : ''}" 
-                         onclick="selectMail(${mail.id}, '${escapeHtml(mail.message_id || '')}')">
+                         onclick="selectMail(${mail.id})">
                         <div class="mail-item-header">
                             <span class="mail-from">${escapeHtml(mail.source || '未知')}</span>
                             <span class="mail-date">${formatDate(mail.created_at)}</span>
@@ -1650,8 +1982,8 @@
             }
         }
 
-        async function selectMail(mailId, messageId = '') {
-            selectedMailId = mailId;
+        async function selectMail(id) {
+            selectedMailId = id;
             renderMailList();
             
             const mailDetailEl = document.getElementById('mailDetail');
@@ -1666,9 +1998,9 @@
                 </div>
             `;
 
-            const mail = await getMailDetail(mailId, messageId);
+            const mail = await getMailDetail(id);
             if (mail) {
-                renderMailDetail(mail);
+                await renderMailDetail(mail);
             } else {
                 mailDetailEl.innerHTML = `
                     <div class="mail-detail-empty">
@@ -1684,18 +2016,21 @@
             }
         }
 
-        function renderMailDetail(mail) {
+        async function renderMailDetail(mail) {
             const mailDetailEl = document.getElementById('mailDetail');
             if (!mailDetailEl) return;
 
             const fromName = extractEmailName(mail.source);
             const fromInitial = fromName.charAt(0).toUpperCase();
-            const body = parseMailBody(mail.raw);
+            const body = await parseMailBody(mail.raw);
+            
+            const parsedSubject = parseMailSubject(mail.raw);
+            const subject = parsedSubject || mail.subject || '无主题';
 
             mailDetailEl.innerHTML = `
                 <div class="mail-detail-content">
                     <div class="mail-detail-header">
-                        <h1 class="mail-detail-subject">${escapeHtml(mail.subject || '无主题')}</h1>
+                        <h1 class="mail-detail-subject">${escapeHtml(subject)}</h1>
                         <div class="mail-detail-meta">
                             <div class="mail-detail-from">
                                 <div class="mail-avatar">${fromInitial}</div>
@@ -1722,9 +2057,31 @@
 
         function showRawMail() {
             if (window.currentRawMail) {
-                alert(window.currentRawMail);
+                const modal = document.getElementById('rawMailModal');
+                const content = document.getElementById('rawMailContent');
+                if (modal && content) {
+                    content.textContent = window.currentRawMail;
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
             }
         }
+
+        function closeRawMailModal(event) {
+            if (!event || event.target === event.currentTarget || event.target.closest('.close-btn')) {
+                const modal = document.getElementById('rawMailModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRawMailModal();
+            }
+        });
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -1755,29 +2112,88 @@
             }
         }
 
-        function parseMailBody(raw) {
+        async function parseMailBody(raw) {
             if (!raw) return '<p>邮件内容为空</p>';
+            
+            if (window.mailParser && window.mailParser.parse_message) {
+                try {
+                    const result = window.mailParser.parse_message(raw);
+                    let htmlBody = result.body_html || '';
+                    let textBody = result.text || '';
+                    
+                    if (htmlBody && htmlBody.trim()) {
+                        htmlBody = cleanOutlookStyles(htmlBody);
+                        const sanitized = sanitizeHtml(htmlBody);
+                        result.free();
+                        return sanitized;
+                    } else if (textBody && textBody.trim()) {
+                        textBody = cleanOutlookStyles(textBody);
+                        result.free();
+                        return '<p>' + escapeHtml(textBody).replace(/\n/g, '</p><p>') + '</p>';
+                    }
+                    result.free();
+                } catch (e) {
+                    console.error('WASM parse error:', e);
+                }
+            }
+            
+            if (raw.includes('boundary=')) {
+                const boundaryMatch = raw.match(/boundary=(["'])?([^"';\s]+)\1?/i);
+                if (boundaryMatch) {
+                    let boundary = boundaryMatch[2];
+                    boundary = boundary.replace(/^["']|["']$/g, '');
+                    const parts = raw.split('--' + boundary);
+                    
+                    let htmlContent = '';
+                    let textContent = '';
+                    
+                    for (const part of parts) {
+                        if (part.trim() === '' || part.trim() === '--') continue;
+                        
+                        const lowerPart = part.toLowerCase();
+                        if (lowerPart.includes('content-type: text/html')) {
+                            const result = extractPartContent(part);
+                            if (result.content) {
+                                htmlContent = result.content;
+                            }
+                        } else if (lowerPart.includes('content-type: text/plain') && !textContent) {
+                            const result = extractPartContent(part);
+                            if (result.content) {
+                                textContent = result.content;
+                            }
+                        }
+                    }
+                    
+                    if (htmlContent) {
+                        htmlContent = cleanOutlookStyles(htmlContent);
+                        return sanitizeHtml(htmlContent);
+                    } else if (textContent) {
+                        textContent = cleanOutlookStyles(textContent);
+                        return '<p>' + escapeHtml(textContent).replace(/\n/g, '</p><p>') + '</p>';
+                    }
+                }
+            }
             
             let body = '';
             let contentType = 'text/plain';
             let contentTransferEncoding = '';
             let inBody = false;
+            let headerEnd = false;
             const lines = raw.split('\n');
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 
-                if (line.toLowerCase().startsWith('content-type:')) {
-                    contentType = line.toLowerCase();
-                }
-                
-                if (line.toLowerCase().startsWith('content-transfer-encoding:')) {
-                    contentTransferEncoding = line.toLowerCase().replace('content-transfer-encoding:', '').trim();
-                }
-                
-                if (!inBody && line.trim() === '') {
-                    inBody = true;
-                    continue;
+                if (!headerEnd) {
+                    if (line.toLowerCase().startsWith('content-type:')) {
+                        contentType = line.toLowerCase();
+                    } else if (line.toLowerCase().startsWith('content-transfer-encoding:')) {
+                        contentTransferEncoding = line.toLowerCase().replace('content-transfer-encoding:', '').trim();
+                    } else if (line.trim() === '') {
+                        headerEnd = true;
+                        inBody = true;
+                        continue;
+                    }
                 }
                 
                 if (inBody) {
@@ -1786,6 +2202,7 @@
             }
             
             body = body.trim();
+            body = cleanOutlookStyles(body);
             
             if (contentTransferEncoding.includes('base64')) {
                 try {
@@ -1804,6 +2221,142 @@
             return '<p>' + escapeHtml(body).replace(/\n/g, '</p><p>') + '</p>';
         }
 
+        function cleanOutlookStyles(content) {
+            if (!content) return content;
+            
+            let cleaned = content;
+            
+            cleaned = cleaned.replace(/^\s*P\s*\{\s*margin-top\s*:\s*0\s*;\s*margin-bottom\s*:\s*0\s*;\s*\}\s*$/gm, '');
+            
+            cleaned = cleaned.replace(/^\s*P\s*\{\s*margin-top\s*:\s*0\s*;\s*margin-bottom\s*:\s*0\s*;\s*\}\s*/g, '');
+            
+            cleaned = cleaned.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+            
+            cleaned = cleaned.replace(/<meta[^>]*>/gi, '');
+            
+            cleaned = cleaned.replace(/^\s*$/gm, '');
+            
+            return cleaned.trim();
+        }
+
+        function parseMailSubject(raw) {
+            if (!raw) return '';
+            
+            const subjectMatch = raw.match(/^Subject:\s*(.+)$/im);
+            if (!subjectMatch) return '';
+            
+            let subject = subjectMatch[1];
+            
+            const lines = raw.split('\n');
+            let inSubject = false;
+            let fullSubject = '';
+            
+            for (const line of lines) {
+                if (line.toLowerCase().startsWith('subject:')) {
+                    inSubject = true;
+                    fullSubject = line.substring(8).trim();
+                } else if (inSubject) {
+                    if (line.startsWith(' ') || line.startsWith('\t')) {
+                        fullSubject += line.trim();
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            if (!fullSubject) fullSubject = subject;
+            
+            if (fullSubject.toLowerCase().includes('=?')) {
+                fullSubject = decodeEncodedSubject(fullSubject);
+            }
+            
+            return fullSubject.trim();
+        }
+
+        function decodeEncodedSubject(subject) {
+            const encodedMatch = subject.match(/=\?([^?]+)\?([BQ])\?([^?]+)\?=/gi);
+            if (!encodedMatch) return subject;
+            
+            let decoded = subject;
+            for (const match of encodedMatch) {
+                const parts = match.match(/=\?([^?]+)\?([BQ])\?([^?]+)\?=/i);
+                if (parts) {
+                    const charset = parts[1].toUpperCase();
+                    const encoding = parts[2].toUpperCase();
+                    const content = parts[3];
+                    
+                    let decodedPart = '';
+                    try {
+                        if (encoding === 'B') {
+                            decodedPart = decodeBase64(content, charset);
+                        } else if (encoding === 'Q') {
+                            decodedPart = decodeQuotedPrintable(content);
+                        }
+                    } catch (e) {
+                        decodedPart = content;
+                    }
+                    
+                    decoded = decoded.replace(match, decodedPart);
+                }
+            }
+            
+            return decoded;
+        }
+
+        function decodeBase64(content, charset) {
+            const decoded = atob(content.replace(/\s/g, ''));
+            const bytes = new Uint8Array(decoded.length);
+            for (let i = 0; i < decoded.length; i++) {
+                bytes[i] = decoded.charCodeAt(i);
+            }
+            
+            try {
+                return new TextDecoder(charset).decode(bytes);
+            } catch (e) {
+                return new TextDecoder('UTF-8').decode(bytes);
+            }
+        }
+
+        function extractPartContent(part) {
+            let content = '';
+            let contentTransferEncoding = '';
+            let inBody = false;
+            let headerEnd = false;
+            const lines = part.split('\n');
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                
+                if (!headerEnd) {
+                    if (line.toLowerCase().startsWith('content-transfer-encoding:')) {
+                        contentTransferEncoding = line.toLowerCase().replace('content-transfer-encoding:', '').trim();
+                    } else if (line.trim() === '') {
+                        headerEnd = true;
+                        inBody = true;
+                        continue;
+                    }
+                }
+                
+                if (inBody) {
+                    content += line + '\n';
+                }
+            }
+            
+            content = content.trim();
+            
+            if (contentTransferEncoding.includes('base64')) {
+                try {
+                    content = atob(content.replace(/\s/g, ''));
+                } catch (e) {
+                    console.error('Base64 decode error:', e);
+                }
+            } else if (contentTransferEncoding.includes('quoted-printable')) {
+                content = decodeQuotedPrintable(content);
+            }
+            
+            return { content, encoding: contentTransferEncoding };
+        }
+
         function decodeQuotedPrintable(str) {
             return str.replace(/=([0-9A-Fa-f]{2})/g, (match, hex) => {
                 return String.fromCharCode(parseInt(hex, 16));
@@ -1811,21 +2364,23 @@
         }
 
         function sanitizeHtml(html) {
-            const allowedTags = ['b', 'i', 'u', 'strong', 'em', 'p', 'br', 'div', 'span', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th'];
-            const allowedAttributes = ['href', 'target'];
+            html = html.replace(/=3D/g, '=');
+            
+            const allowedTags = ['b', 'i', 'u', 'strong', 'em', 'p', 'br', 'div', 'span', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'tfoot', 'meta', 'head', 'body', 'html'];
+            const allowedAttributes = ['href', 'target', 'rel', 'class', 'style', 'dir'];
             
             return html.replace(/<(\/?)(\w+)([^>]*)>/gi, (match, closing, tag, attrs) => {
                 if (allowedTags.includes(tag.toLowerCase())) {
                     let cleanAttrs = '';
                     if (attrs) {
-                        const attrMatches = attrs.match(/(\w+)\s*=\s*["']([^"']*)["']/gi);
-                        if (attrMatches) {
-                            attrMatches.forEach(attrMatch => {
-                                const attrMatchParts = attrMatch.match(/(\w+)\s*=\s*["']([^"']*)["']/i);
-                                if (attrMatchParts && allowedAttributes.includes(attrMatchParts[1].toLowerCase())) {
-                                    cleanAttrs += ' ' + attrMatch;
-                                }
-                            });
+                        const attrRegex = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]*))/gi;
+                        let attrMatch;
+                        while ((attrMatch = attrRegex.exec(attrs)) !== null) {
+                            const attrName = attrMatch[1].toLowerCase();
+                            const attrValue = attrMatch[2] || attrMatch[3] || attrMatch[4] || '';
+                            if (allowedAttributes.includes(attrName)) {
+                                cleanAttrs += ` ${attrName}="${attrValue.replace(/"/g, '&quot;')}"`;
+                            }
                         }
                     }
                     return `<${closing}${tag}${cleanAttrs}>`;
@@ -1834,7 +2389,6 @@
             });
         }
 
-        // Domain Select Functions
         function toggleDomainSelect() {
             const wrapper = document.getElementById('domainSelect');
             wrapper.classList.toggle('active');
@@ -1869,7 +2423,6 @@
             }
         });
 
-        // Register Function
         async function handleRegister() {
             const localPartInput = document.getElementById('localPartInput');
             const localPart = currentDomain === '838483.dpdns.org' ? '' : localPartInput.value.trim();
@@ -1904,7 +2457,6 @@
             renderMailPage();
         }
 
-        // Initialize
         async function init() {
             loadSavedTheme();
             document.addEventListener('click', closeAccountDropdown);
@@ -1920,6 +2472,14 @@
 
             if (userName) {
                 document.getElementById('userName').textContent = userName;
+            }
+
+            try {
+                if (window.mailParser && window.mailParser.init) {
+                    await window.mailParser.init;
+                }
+            } catch (e) {
+                console.error('WASM initialization failed:', e);
             }
 
             const hasEmails = await getEmailAddresses();
