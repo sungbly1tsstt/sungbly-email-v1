@@ -137,6 +137,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
+            /* overflow: hidden; */
         }
 
         .navbar {
@@ -348,6 +349,67 @@
             height: 1px;
             background: var(--glass-border);
             margin: 8px 0;
+        }
+
+        .dropdown-section {
+            padding: 8px 0;
+        }
+
+        .dropdown-section-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 0 12px 6px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .email-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        .email-item.selected {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .email-item.selected svg {
+            fill: var(--primary-color);
+        }
+
+        .email-address {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .can-send-badge {
+            font-size: 11px;
+            padding: 2px 6px;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .cannot-send-badge {
+            font-size: 11px;
+            padding: 2px 6px;
+            background: rgba(156, 163, 175, 0.15);
+            color: #9ca3af;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .no-email-text {
+            padding: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            display: block;
         }
 
         .logout-btn {
@@ -752,7 +814,6 @@
         .mail-detail-header {
             padding: 24px;
             border-bottom: 1px solid var(--glass-border);
-            flex-shrink: 0;
         }
 
         .mail-detail-subject {
@@ -810,9 +871,7 @@
         }
 
         .mail-detail-body {
-            flex: 1;
             padding: 24px;
-            overflow-y: auto;
         }
 
         .mail-body {
@@ -828,7 +887,6 @@
             border-top: 1px solid var(--glass-border);
             display: flex;
             gap: 12px;
-            flex-shrink: 0;
         }
 
         .btn {
@@ -859,6 +917,17 @@
         .btn-secondary:hover {
             background: var(--primary-light);
             border-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
         }
 
         .register-panel {
@@ -1405,6 +1474,7 @@
             transform: scale(0.9) translateY(20px);
             transition: transform 0.3s ease;
             overflow: hidden;
+            pointer-events: auto;
         }
 
         .modal-overlay.active .raw-mail-dialog {
@@ -1503,6 +1573,276 @@
                 padding: 12px;
             }
         }
+
+        .compose-mail-dialog {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            pointer-events: auto;
+        }
+
+        .modal-overlay.active .compose-mail-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .compose-mail-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .compose-mail-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .compose-mail-content {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .compose-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .compose-field label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .compose-from {
+            padding: 10px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .compose-input {
+            padding: 10px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .compose-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .compose-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .compose-body-field {
+            flex: 1;
+            min-height: 300px;
+        }
+
+        .compose-textarea {
+            flex: 1;
+            min-height: 300px;
+            padding: 12px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            resize: vertical;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .compose-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .compose-textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .compose-mail-actions {
+            padding: 16px 24px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .primary-btn {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-hover) !important;
+            border-color: var(--primary-hover) !important;
+        }
+
+        .primary-btn svg {
+            fill: white !important;
+        }
+
+        .primary-btn:hover svg {
+            fill: white !important;
+        }
+
+        @media (max-width: 600px) {
+            .compose-mail-dialog {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .compose-mail-header {
+                padding: 16px 20px;
+            }
+
+            .compose-mail-content {
+                padding: 16px 20px;
+            }
+
+            .compose-mail-actions {
+                padding: 16px 20px;
+                flex-direction: column;
+            }
+
+            .compose-mail-actions .btn {
+                width: 100%;
+            }
+
+            .compose-body-field {
+                min-height: 250px;
+            }
+
+            .compose-textarea {
+                min-height: 250px;
+            }
+        }
+
+        .confirm-dialog {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .confirm-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-dialog-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(251, 191, 36, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #fbbf24;
+            flex-shrink: 0;
+        }
+
+        .confirm-dialog-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .confirm-dialog-title {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confirm-dialog-message {
+            margin: 0 0 24px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .confirm-dialog-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .confirm-dialog-actions .btn {
+            flex: 1;
+            max-width: 140px;
+        }
+
+        @media (max-width: 600px) {
+            .confirm-dialog {
+                width: 95%;
+                padding: 24px;
+            }
+
+            .confirm-dialog-icon {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 16px;
+            }
+
+            .confirm-dialog-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .confirm-dialog-actions {
+                flex-direction: column;
+            }
+
+            .confirm-dialog-actions .btn {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="theme-blue">
@@ -1522,17 +1862,75 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="confirmModal" onclick="closeConfirmModal(event)">
+        <div class="confirm-dialog">
+            <div class="confirm-dialog-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M8 15s1.5-2 4-2 4 2 4 2"></path>
+                    <path d="M9 9h.01"></path>
+                    <path d="M15 9h.01"></path>
+                </svg>
+            </div>
+            <h3 class="confirm-dialog-title">确认关闭？</h3>
+            <p class="confirm-dialog-message">您的邮件内容尚未保存，确定要关闭吗？</p>
+            <div class="confirm-dialog-actions">
+                    <button class="btn btn-secondary" onclick="cancelCloseCompose()">取消</button>
+                    <button class="btn btn-danger" onclick="forceCloseCompose()">确定关闭</button>
+                </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="composeMailModal" onclick="closeComposeMailModal(event)">
+        <div class="compose-mail-dialog">
+            <div class="compose-mail-header">
+                <h3>新邮件</h3>
+                <button class="close-btn" onclick="closeComposeMailModal()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="compose-mail-content">
+                <div class="compose-field">
+                    <label>发件人</label>
+                    <div class="compose-from" id="composeFrom">${selectedEmail || '未选择邮箱'}</div>
+                </div>
+                <div class="compose-field">
+                    <label>收件人</label>
+                    <input type="email" id="composeTo" class="compose-input" placeholder="请输入收件人邮箱地址">
+                </div>
+                <div class="compose-field">
+                    <label>主题</label>
+                    <input type="text" id="composeSubject" class="compose-input" placeholder="请输入邮件主题">
+                </div>
+                <div class="compose-field compose-body-field">
+                    <label>正文</label>
+                    <textarea id="composeBody" class="compose-textarea" placeholder="请输入邮件内容"></textarea>
+                </div>
+            </div>
+            <div class="compose-mail-actions">
+                <button class="btn btn-secondary" onclick="saveDraftMail()">
+                    保存草稿
+                </button>
+                <button class="btn btn-primary" onclick="sendMailFromCompose()">
+                    发送邮件
+                </button>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="navbar-left">
             <h1 class="navbar-title">SUNGBLY 邮件系统</h1>
             <span class="navbar-user" id="userName">用户</span>
         </div>
         <div class="navbar-actions">
-            <button class="action-btn" onclick="showRegisterEmailModal()">
+            <button class="action-btn compose-btn" onclick="showComposeMailModal()">
                 <svg viewBox="0 0 24 24">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
-                <span>注册新邮箱</span>
+                <span>写邮件</span>
             </button>
             <div class="account-dropdown" id="accountDropdown">
                 <button class="account-dropdown-btn" onclick="toggleAccountDropdown()">
@@ -1545,6 +1943,18 @@
                     </svg>
                 </button>
                 <div class="account-dropdown-menu" id="accountDropdownMenu">
+                    <div class="dropdown-section">
+                        <span class="dropdown-section-title">邮箱账户</span>
+                        <div id="emailAddressesList"></div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item register-email-btn" onclick="showRegisterEmailModal()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        注册新邮箱
+                    </button>
+                    <div class="dropdown-divider"></div>
                     <button class="dropdown-item logout-btn" onclick="logout()">
                         <svg viewBox="0 0 24 24">
                             <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
@@ -1707,6 +2117,11 @@
         }
 
         function selectFolder(folder) {
+            if (!selectedEmail) {
+                showNotification('请先注册或选择一个邮箱地址', 'error');
+                return;
+            }
+
             currentFolder = folder;
             const items = document.querySelectorAll('.sidebar .list-item');
             items.forEach((item, index) => {
@@ -1717,7 +2132,53 @@
                     item.classList.add('active');
                 }
             });
+            
+            const titleEl = document.querySelector('.mail-list-panel .panel-title');
+            if (titleEl) {
+                titleEl.textContent = getFolderName();
+            }
+            
+            const mailListEl = document.getElementById('mailList');
+            if (mailListEl) {
+                mailListEl.innerHTML = `
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">加载中...</div>
+                    </div>
+                `;
+            }
+            
+            const mailDetailEl = document.getElementById('mailDetail');
+            if (mailDetailEl) {
+                mailDetailEl.innerHTML = `
+                    <div class="mail-detail-empty">
+                        <div class="mail-detail-empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </div>
+                        <p>选择一封邮件查看详情</p>
+                    </div>
+                `;
+            }
+            
+            selectedMailId = null;
             renderMailList();
+        }
+
+        // Cookie 相关函数
+        function setCookie(name, value, days = 365) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Strict`;
+        }
+        
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                return decodeURIComponent(parts.pop().split(';').shift());
+            }
+            return null;
         }
 
         async function apiCall(type, data = {}) {
@@ -1750,12 +2211,113 @@
                 emailAddresses = result.returnData.content.addresses;
                 if (emailAddresses.length > 0) {
                     hasRegisteredEmail = true;
-                    selectedEmail = emailAddresses[0].address;
+                    if (!selectedEmail) {
+                        // 尝试从 cookie 读取之前选择的邮箱
+                        const savedEmail = getCookie('selectedEmail');
+                        if (savedEmail && emailAddresses.some(addr => addr.address === savedEmail)) {
+                            selectedEmail = savedEmail;
+                        } else {
+                            selectedEmail = emailAddresses[0].address;
+                        }
+                    }
+                    updateEmailAddressesList();
                     return true;
                 }
             }
             hasRegisteredEmail = false;
             return false;
+        }
+
+        function updateEmailAddressesList() {
+            const listEl = document.getElementById('emailAddressesList');
+            if (!listEl) return;
+
+            if (emailAddresses.length === 0) {
+                listEl.innerHTML = '<span class="no-email-text">暂无邮箱账户</span>';
+                return;
+            }
+
+            listEl.innerHTML = emailAddresses.map(addr => {
+                const isSelected = selectedEmail === addr.address;
+                const canSend = addr.canSend === 1;
+                return `
+                    <button 
+                        class="dropdown-item email-item ${isSelected ? 'selected' : ''}" 
+                        onclick="selectEmail('${addr.address}')"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                        <span class="email-address">${addr.address}</span>
+                        ${canSend ? '<span class="can-send-badge">可发送</span>' : '<span class="cannot-send-badge">仅接收</span>'}
+                    </button>
+                `;
+            }).join('');
+
+            updateCurrentAccountDisplay();
+        }
+
+        function updateCurrentAccountDisplay() {
+            const currentEmailEl = document.getElementById('currentAccountEmail');
+            if (currentEmailEl && selectedEmail) {
+                currentEmailEl.textContent = selectedEmail;
+            }
+        }
+
+        async function selectEmail(email) {
+            if (email === selectedEmail) {
+                toggleAccountDropdown();
+                return;
+            }
+
+            selectedEmail = email;
+            // 保存选择的账户到 cookie
+            setCookie('selectedEmail', email);
+            updateEmailAddressesList();
+            toggleAccountDropdown();
+
+            // 自动切换到收件箱
+            currentFolder = 'inbox';
+            const items = document.querySelectorAll('.sidebar .list-item');
+            items.forEach((item, index) => {
+                item.classList.remove('active');
+                if (index === 0) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // 更新邮件列表标题
+            const titleEl = document.querySelector('.mail-list-panel .panel-title');
+            if (titleEl) {
+                titleEl.textContent = '收件箱';
+            }
+
+            const mailListEl = document.getElementById('mailList');
+            if (mailListEl) {
+                mailListEl.innerHTML = `
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">切换账户中...</div>
+                    </div>
+                `;
+            }
+
+            const detailEl = document.getElementById('mailDetail');
+            if (detailEl) {
+                detailEl.innerHTML = `
+                    <div class="mail-detail-empty">
+                        <div class="mail-detail-empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </div>
+                        <p>选择一封邮件查看详情</p>
+                    </div>
+                `;
+            }
+
+            selectedMailId = null;
+            await renderMailList();
         }
 
         async function registerEmail(localPart, domain) {
@@ -1771,22 +2333,174 @@
             }
         }
 
+        async function sendMail(to, subject, bodyContent, isHtml = false) {
+            if (!selectedEmail) {
+                return { success: false, message: '请先选择一个发件邮箱' };
+            }
+
+            const result = await apiCall('sendMail', {
+                address: selectedEmail,
+                to,
+                subject,
+                content: bodyContent,
+                isHtml
+            });
+
+            if (result.returnData.code === 200) {
+                return { success: true, message: '邮件发送成功' };
+            } else {
+                const errorMsg = String(result.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    return { success: false, message: '暂无发件权限，请联系公众号申请' };
+                }
+                return { success: false, message: errorMsg || '发送失败' };
+            }
+        }
+
+        async function saveDraft(to, subject, bodyContent, isHtml = false) {
+            if (!selectedEmail) {
+                return { success: false, message: '请先选择一个邮箱' };
+            }
+
+            const result = await apiCall('uploadDraft', {
+                address: selectedEmail,
+                to,
+                subject,
+                content: bodyContent,
+                isHtml
+            });
+
+            if (result.returnData.code === 200) {
+                return { success: true, message: '草稿保存成功' };
+            } else {
+                const errorMsg = String(result.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    return { success: false, message: '暂无发件权限，请联系公众号申请' };
+                }
+                return { success: false, message: errorMsg || '保存失败' };
+            }
+        }
+
+        async function updateDraft(mailId, updates) {
+            const result = await apiCall('updateDraft', {
+                mailId,
+                ...updates
+            });
+
+            if (result.returnData.code === 200) {
+                return { success: true, message: '草稿修改成功' };
+            } else {
+                const errorMsg = String(result.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    return { success: false, message: '暂无发件权限，请联系公众号申请' };
+                }
+                return { success: false, message: errorMsg || '修改失败' };
+            }
+        }
+
+        async function deleteDraft(mailId) {
+            const result = await apiCall('deleteDraft', {
+                address: selectedEmail,
+                mailId
+            });
+
+            if (result.returnData.code === 200) {
+                return { success: true, message: '草稿删除成功' };
+            } else {
+                const errorMsg = String(result.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    return { success: false, message: '暂无发件权限，请联系公众号申请' };
+                }
+                return { success: false, message: errorMsg || '删除失败' };
+            }
+        }
+
+        async function sendDraft(mailId) {
+            const draft = await apiCall('getDraftMail', { 
+                address: selectedEmail,
+                mailId 
+            });
+            
+            if (draft.returnData.code !== 200) {
+                const errorMsg = String(draft.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    return { success: false, message: '暂无发件权限，请联系公众号申请' };
+                }
+                return { success: false, message: '获取草稿失败: ' + errorMsg };
+            }
+
+            const draftData = draft.returnData.content;
+            
+            if (!draftData.to_address || !draftData.subject || !draftData.content) {
+                return { success: false, message: '草稿内容不完整，无法发送' };
+            }
+
+            const sendResult = await apiCall('sendMail', {
+                address: draftData.from_address,
+                to: draftData.to_address,
+                subject: draftData.subject,
+                content: draftData.content,
+                isHtml: draftData.isHtml === 1
+            });
+
+            if (sendResult.returnData.code === 200) {
+                const deleteResult = await deleteDraft(mailId);
+                if (deleteResult.success) {
+                    return { success: true, message: '邮件发送成功，草稿已删除' };
+                } else {
+                    return { success: true, message: '邮件发送成功，但草稿删除失败: ' + deleteResult.message };
+                }
+            } else {
+                const errorMsg = String(sendResult.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    return { success: false, message: '暂无发件权限，请联系公众号申请' };
+                }
+                return { success: false, message: '发送失败: ' + errorMsg };
+            }
+        }
+
         async function getMailList() {
             if (!selectedEmail) {
                 console.error('selectedEmail is null or undefined, cannot fetch mail list');
                 return [];
             }
             
-            const result = await apiCall('listMails', {
-                address: selectedEmail,
-                limit: 50,
-                offset: 0
-            });
+            let result;
+            switch (currentFolder) {
+                case 'sent':
+                    result = await apiCall('listSentMails', {
+                        address: selectedEmail,
+                        limit: 50,
+                        offset: 0
+                    });
+                    break;
+                case 'drafts':
+                    result = await apiCall('listDraftMails', {
+                        address: selectedEmail,
+                        limit: 50,
+                        offset: 0
+                    });
+                    break;
+                case 'inbox':
+                default:
+                    result = await apiCall('listMails', {
+                        address: selectedEmail,
+                        limit: 50,
+                        offset: 0
+                    });
+                    break;
+            }
 
             if (result.returnData.code === 200 && result.returnData.content.results) {
                 return result.returnData.content.results;
             } else if (result.returnData.code !== 200) {
                 console.error('API Error:', result.returnData);
+                const errorMsg = String(result.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    showNotification('暂无发件权限，请联系公众号申请', 'error');
+                } else if (result.returnData.code === 403) {
+                    showNotification('您没有权限访问此功能', 'error');
+                }
             }
             return [];
         }
@@ -1802,15 +2516,39 @@
                 return null;
             }
             
-            const result = await apiCall('getMail', {
-                address: selectedEmail,
-                mailId: mailId
-            });
+            let result;
+            switch (currentFolder) {
+                case 'sent':
+                    result = await apiCall('getSentMail', {
+                        address: selectedEmail,
+                        mailId: mailId
+                    });
+                    break;
+                case 'drafts':
+                    result = await apiCall('getDraftMail', {
+                        address: selectedEmail,
+                        mailId: mailId
+                    });
+                    break;
+                case 'inbox':
+                default:
+                    result = await apiCall('getMail', {
+                        address: selectedEmail,
+                        mailId: mailId
+                    });
+                    break;
+            }
 
             if (result.returnData.code === 200) {
                 return result.returnData.content;
             } else {
                 console.error('API Error:', result.returnData);
+                const errorMsg = String(result.returnData.content || '');
+                if (errorMsg.includes('permission') || errorMsg.includes('denied')) {
+                    showNotification('暂无发件权限，请联系公众号申请', 'error');
+                } else if (result.returnData.code === 403) {
+                    showNotification('您没有权限访问此功能', 'error');
+                }
             }
             return null;
         }
@@ -1961,24 +2699,44 @@
             mails = await getMailList();
             
             if (mails.length === 0) {
+                let emptyText = '收件箱为空';
+                let emptySubText = '暂无新邮件';
+                if (currentFolder === 'drafts') {
+                    emptyText = '草稿箱为空';
+                    emptySubText = '暂无草稿';
+                } else if (currentFolder === 'sent') {
+                    emptyText = '已发送为空';
+                    emptySubText = '暂无已发送邮件';
+                }
                 mailListEl.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-text">收件箱为空</div>
-                        <div class="empty-state-text-secondary">暂无新邮件</div>
+                        <div class="empty-state-text">${emptyText}</div>
+                        <div class="empty-state-text-secondary">${emptySubText}</div>
                     </div>
                 `;
             } else {
-                mailListEl.innerHTML = mails.map(mail => `
-                    <div class="mail-item ${mail.id === selectedMailId ? 'active' : ''}" 
-                         onclick="selectMail(${mail.id})">
-                        <div class="mail-item-header">
-                            <span class="mail-from">${escapeHtml(mail.source || '未知')}</span>
-                            <span class="mail-date">${formatDate(mail.created_at)}</span>
+                mailListEl.innerHTML = mails.map(mail => {
+                    // 根据文件夹类型确定显示的地址
+                    let displayAddress;
+                    if (currentFolder === 'sent') {
+                        // 发送箱显示收件人
+                        displayAddress = mail.source || mail.to_address || mail.from_address || '未知';
+                    } else {
+                        // 收件箱和草稿箱显示发件人
+                        displayAddress = mail.source || mail.from_address || mail.to_address || '未知';
+                    }
+                    return `
+                        <div class="mail-item ${mail.id === selectedMailId ? 'active' : ''}" 
+                             onclick="selectMail(${mail.id})">
+                            <div class="mail-item-header">
+                                <span class="mail-from">${escapeHtml(displayAddress)}</span>
+                                <span class="mail-date">${formatDate(mail.created_at)}</span>
+                            </div>
+                            <div class="mail-subject">${escapeHtml(mail.subject || '无主题')}</div>
+                            <div class="mail-preview">${escapeHtml(mail.subject || '')}</div>
                         </div>
-                        <div class="mail-subject">${escapeHtml(mail.subject || '无主题')}</div>
-                        <div class="mail-preview">${escapeHtml(mail.subject || '')}</div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         }
 
@@ -2020,12 +2778,61 @@
             const mailDetailEl = document.getElementById('mailDetail');
             if (!mailDetailEl) return;
 
-            const fromName = extractEmailName(mail.source);
+            // 根据文件夹类型确定显示的地址
+            let fromAddress;
+            if (currentFolder === 'sent') {
+                // 发送箱显示收件人
+                fromAddress = mail.source || mail.to_address || mail.from_address || '';
+            } else {
+                // 收件箱和草稿箱显示发件人
+                fromAddress = mail.source || mail.from_address || '';
+            }
+            const fromName = extractEmailName(fromAddress);
             const fromInitial = fromName.charAt(0).toUpperCase();
-            const body = await parseMailBody(mail.raw);
             
-            const parsedSubject = parseMailSubject(mail.raw);
-            const subject = parsedSubject || mail.subject || '无主题';
+            // 处理邮件内容
+            let body;
+            if (mail.raw) {
+                // 如果有 raw 字段，使用标准邮件解析
+                body = await parseMailBody(mail.raw);
+            } else if (mail.content) {
+                // 如果没有 raw 只有 content（草稿箱/发送箱），直接显示纯文本
+                if (mail.isHtml === 1) {
+                    body = sanitizeHtml(mail.content);
+                } else {
+                    body = '<p>' + escapeHtml(mail.content).replace(/\n/g, '</p><p>') + '</p>';
+                }
+            } else {
+                body = '<p>邮件内容为空</p>';
+            }
+            
+            // 统一解析邮件主题
+            let subject = mail.subject || '无主题';
+            if (mail.raw) {
+                const parsedSubject = parseMailSubject(mail.raw);
+                if (parsedSubject) {
+                    subject = parsedSubject;
+                }
+            }
+
+            let actionsHtml = `
+                <button class="btn btn-primary" onclick="showRawMail()">显示原文</button>
+                <button class="btn btn-secondary" onclick="replyMail()">回复</button>
+                <button class="btn btn-secondary" onclick="forwardMail()">转发</button>
+            `;
+
+            if (currentFolder === 'drafts') {
+                actionsHtml = `
+                    <button class="btn btn-primary" onclick="editDraft(${mail.id})">编辑草稿</button>
+                    <button class="btn btn-secondary" onclick="confirmSendDraft(${mail.id})">发送</button>
+                    <button class="btn btn-danger" onclick="confirmDeleteDraft(${mail.id})">删除</button>
+                `;
+            } else if (currentFolder === 'sent') {
+                // 已发送邮件不需要回复和转发按钮，只保留显示原文
+                actionsHtml = `
+                    <button class="btn btn-secondary" onclick="showRawMail()">显示原文</button>
+                `;
+            }
 
             mailDetailEl.innerHTML = `
                 <div class="mail-detail-content">
@@ -2036,7 +2843,7 @@
                                 <div class="mail-avatar">${fromInitial}</div>
                                 <div class="mail-from-info">
                                     <span class="mail-from-name">${escapeHtml(fromName)}</span>
-                                    <span class="mail-from-email">${escapeHtml(mail.source || '')}</span>
+                                    <span class="mail-from-email">${escapeHtml(fromAddress)}</span>
                                 </div>
                             </div>
                             <div class="mail-detail-date">${formatDate(mail.created_at)}</div>
@@ -2046,13 +2853,191 @@
                         <div class="mail-body">${body}</div>
                     </div>
                     <div class="mail-detail-actions">
-                        <button class="btn btn-primary" onclick="showRawMail()">显示原文</button>
-                        <button class="btn btn-secondary">回复</button>
+                        ${actionsHtml}
                     </div>
                 </div>
             `;
 
-            window.currentRawMail = mail.raw;
+            window.currentRawMail = mail.raw || mail.content || '';
+            window.currentDraftMail = currentFolder === 'drafts' ? mail : null;
+        }
+
+        async function editDraft(mailId) {
+            const result = await apiCall('getDraftMail', { 
+                address: selectedEmail,
+                mailId 
+            });
+            
+            if (result.returnData.code !== 200) {
+                showNotification('获取草稿失败: ' + result.returnData.content, 'error');
+                return;
+            }
+
+            const draft = result.returnData.content;
+            
+            if (!selectedEmail) {
+                selectedEmail = draft.from_address;
+            }
+
+            const modal = document.getElementById('composeMailModal');
+            const fromDisplay = document.getElementById('composeFrom');
+
+            if (modal && fromDisplay) {
+                fromDisplay.textContent = draft.from_address;
+                document.getElementById('composeTo').value = draft.to_address || '';
+                document.getElementById('composeSubject').value = draft.subject || '';
+                document.getElementById('composeBody').value = draft.content || '';
+                
+                saveComposeState();
+                
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                window.currentEditingDraftId = mailId;
+            }
+        }
+
+        async function confirmSendDraft(mailId) {
+            if (!confirm('确定要发送这封草稿邮件吗？')) {
+                return;
+            }
+
+            const result = await sendDraft(mailId);
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
+                renderMailList();
+                
+                const mailDetailEl = document.getElementById('mailDetail');
+                if (mailDetailEl) {
+                    mailDetailEl.innerHTML = `
+                        <div class="mail-detail-empty">
+                            <div class="mail-detail-empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                            <p>选择一封邮件查看详情</p>
+                        </div>
+                    `;
+                }
+            } else {
+                showNotification(result.message, 'error');
+            }
+        }
+
+        async function confirmDeleteDraft(mailId) {
+            if (!confirm('确定要删除这封草稿吗？此操作不可撤销。')) {
+                return;
+            }
+
+            const result = await deleteDraft(mailId);
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
+                renderMailList();
+                
+                const mailDetailEl = document.getElementById('mailDetail');
+                if (mailDetailEl) {
+                    mailDetailEl.innerHTML = `
+                        <div class="mail-detail-empty">
+                            <div class="mail-detail-empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                            <p>选择一封邮件查看详情</p>
+                        </div>
+                    `;
+                }
+            } else {
+                showNotification(result.message, 'error');
+            }
+        }
+
+        async function forwardMail() {
+            const mailDetailEl = document.getElementById('mailDetail');
+            if (!mailDetailEl || !window.currentRawMail) {
+                showNotification('无法获取邮件内容', 'error');
+                return;
+            }
+
+            const mail = await getMailDetail(selectedMailId);
+            if (!mail) {
+                showNotification('无法获取邮件详情', 'error');
+                return;
+            }
+
+            const fromAddress = mail.source || mail.from_address || '';
+            const fromName = extractEmailName(fromAddress);
+            const parsedSubject = mail.raw ? parseMailSubject(mail.raw) : '';
+            const subject = parsedSubject || mail.subject || '无主题';
+            const body = mail.raw || mail.content || '';
+
+            const forwardedContent = `
+-------- 转发邮件 --------
+发件人: ${fromName} <${fromAddress}>
+主题: ${subject}
+时间: ${mail.created_at || ''}
+
+${body}
+            `.trim();
+
+            const modal = document.getElementById('composeMailModal');
+            const fromDisplay = document.getElementById('composeFrom');
+
+            if (modal && fromDisplay) {
+                fromDisplay.textContent = selectedEmail || '';
+                document.getElementById('composeTo').value = '';
+                document.getElementById('composeSubject').value = `Fw: ${subject}`;
+                document.getElementById('composeBody').value = forwardedContent;
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                window.currentEditingDraftId = null;
+            }
+        }
+
+        async function replyMail() {
+            const mailDetailEl = document.getElementById('mailDetail');
+            if (!mailDetailEl || !window.currentRawMail) {
+                showNotification('无法获取邮件内容', 'error');
+                return;
+            }
+
+            const mail = await getMailDetail(selectedMailId);
+            if (!mail) {
+                showNotification('无法获取邮件详情', 'error');
+                return;
+            }
+
+            const fromAddress = mail.source || mail.from_address || '';
+            const parsedSubject = mail.raw ? parseMailSubject(mail.raw) : '';
+            const subject = parsedSubject || mail.subject || '无主题';
+            const body = mail.raw || mail.content || '';
+
+            const repliedContent = `
+-------- 回复 ${fromAddress} --------
+时间: ${mail.created_at || ''}
+
+${body}
+            `.trim();
+
+            const modal = document.getElementById('composeMailModal');
+            const fromDisplay = document.getElementById('composeFrom');
+
+            if (modal && fromDisplay) {
+                fromDisplay.textContent = selectedEmail || '';
+                document.getElementById('composeTo').value = fromAddress;
+                document.getElementById('composeSubject').value = `Re: ${subject}`;
+                document.getElementById('composeBody').value = repliedContent;
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                window.currentEditingDraftId = null;
+            }
         }
 
         function showRawMail() {
@@ -2080,8 +3065,193 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeRawMailModal();
+                closeComposeMailModal();
             }
         });
+
+        function showComposeMailModal() {
+            if (!selectedEmail) {
+                showNotification('请先选择一个邮箱地址', 'error');
+                return;
+            }
+
+            const modal = document.getElementById('composeMailModal');
+            const fromDisplay = document.getElementById('composeFrom');
+
+            if (modal && fromDisplay) {
+                fromDisplay.textContent = selectedEmail;
+                document.getElementById('composeTo').value = '';
+                document.getElementById('composeSubject').value = '';
+                document.getElementById('composeBody').value = '';
+                
+                saveComposeState();
+                
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        let initialComposeState = {};
+
+        function saveComposeState() {
+            initialComposeState = {
+                to: document.getElementById('composeTo').value,
+                subject: document.getElementById('composeSubject').value,
+                body: document.getElementById('composeBody').value
+            };
+        }
+
+        function hasUnsavedChanges() {
+            const currentState = {
+                to: document.getElementById('composeTo').value,
+                subject: document.getElementById('composeSubject').value,
+                body: document.getElementById('composeBody').value
+            };
+            return currentState.to !== initialComposeState.to ||
+                   currentState.subject !== initialComposeState.subject ||
+                   currentState.body !== initialComposeState.body;
+        }
+
+        function showConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeConfirmModal(event) {
+            if (!event || event.target === event.currentTarget || event.target.closest('.btn')) {
+                const modal = document.getElementById('confirmModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            }
+        }
+
+        function forceCloseCompose() {
+            closeConfirmModal();
+            document.body.style.overflow = '';
+            window.currentEditingDraftId = null;
+            initialComposeState = {};
+        }
+
+        function cancelCloseCompose() {
+            closeConfirmModal();
+            const composeModal = document.getElementById('composeMailModal');
+            if (composeModal) {
+                composeModal.classList.add('active');
+            }
+        }
+
+        function closeComposeMailModal(event) {
+            if (!event || event.target === event.currentTarget || event.target.closest('.close-btn')) {
+                if (hasUnsavedChanges()) {
+                    const composeModal = document.getElementById('composeMailModal');
+                    if (composeModal) {
+                        composeModal.classList.remove('active');
+                    }
+                    showConfirmModal();
+                    return;
+                }
+                
+                const modal = document.getElementById('composeMailModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+                window.currentEditingDraftId = null;
+                initialComposeState = {};
+            }
+        }
+
+        async function sendMailFromCompose() {
+            const to = document.getElementById('composeTo').value.trim();
+            const subject = document.getElementById('composeSubject').value.trim();
+            const body = document.getElementById('composeBody').value.trim();
+
+            if (!to) {
+                showNotification('请输入收件人地址', 'error');
+                return;
+            }
+
+            if (!subject) {
+                showNotification('请输入邮件主题', 'error');
+                return;
+            }
+
+            if (!body) {
+                showNotification('请输入邮件内容', 'error');
+                return;
+            }
+
+            const sendBtn = document.querySelector('.compose-mail-actions .btn-primary');
+            const originalText = sendBtn.textContent;
+            sendBtn.textContent = '发送中...';
+            sendBtn.disabled = true;
+
+            try {
+                const result = await sendMail(to, subject, body, false);
+
+                if (result.success) {
+                    showNotification('邮件发送成功', 'success');
+                    initialComposeState = {};
+                    closeComposeMailModal();
+                    renderMailList();
+                } else {
+                    showNotification(result.message || '发送失败', 'error');
+                }
+            } catch (error) {
+                showNotification('发送失败: ' + error.message, 'error');
+            } finally {
+                sendBtn.textContent = originalText;
+                sendBtn.disabled = false;
+            }
+        }
+
+        async function saveDraftMail() {
+            const to = document.getElementById('composeTo').value.trim();
+            const subject = document.getElementById('composeSubject').value.trim();
+            const body = document.getElementById('composeBody').value.trim();
+
+            if (!subject && !body) {
+                showNotification('请输入主题或内容后再保存草稿', 'error');
+                return;
+            }
+
+            const saveBtn = document.querySelector('.compose-mail-actions .btn-secondary');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = '保存中...';
+            saveBtn.disabled = true;
+
+            try {
+                let result;
+                const editingDraftId = window.currentEditingDraftId;
+                
+                if (editingDraftId) {
+                    const updates = {};
+                    if (to) updates.to = to;
+                    if (subject) updates.subject = subject;
+                    if (body) updates.content = body;
+                    
+                    result = await updateDraft(editingDraftId, updates);
+                } else {
+                    result = await saveDraft(to, subject || '(无主题)', body, false);
+                }
+
+                if (result.success) {
+                    showNotification(editingDraftId ? '草稿修改成功' : '草稿保存成功', 'success');
+                    initialComposeState = {};
+                    closeComposeMailModal();
+                } else {
+                    showNotification(result.message || '保存失败', 'error');
+                }
+            } catch (error) {
+                showNotification('保存失败: ' + error.message, 'error');
+            } finally {
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            }
+        }
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -2098,17 +3268,33 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diff = now - date;
             
-            if (diff < 24 * 60 * 60 * 1000 && date.getDate() === now.getDate()) {
-                return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-            } else if (diff < 7 * 24 * 60 * 60 * 1000) {
+            const date = new Date(dateStr);
+            // 转换为UTC+8时区
+            const utc8Date = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+            const now = new Date();
+            const nowUtc8 = now;
+            
+            // 判断是否在同一天（UTC+8）
+            const isSameDay = utc8Date.getDate() === nowUtc8.getDate() && 
+                            utc8Date.getMonth() === nowUtc8.getMonth() && 
+                            utc8Date.getFullYear() === nowUtc8.getFullYear();
+            
+            // 判断是否在一周内（基于UTC+8）
+            const diffDays = Math.floor((nowUtc8 - utc8Date) / (24 * 60 * 60 * 1000));
+            
+            if (isSameDay) {
+                // 今天显示时间（24小时制）
+                const hours = String(utc8Date.getHours()).padStart(2, '0');
+                const minutes = String(utc8Date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            } else if (diffDays >= 0 && diffDays < 7) {
+                // 一周内显示星期
                 const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-                return days[date.getDay()];
+                return days[utc8Date.getDay()];
             } else {
-                return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+                // 更早的显示日期
+                return `${utc8Date.getMonth() + 1}月${utc8Date.getDate()}日`;
             }
         }
 
